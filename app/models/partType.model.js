@@ -1,9 +1,11 @@
 module.exports = (mongoose) => {
+
     let schema = mongoose.Schema(
         {
-            type: Object,
+            type: String,
+            isParentType: Boolean,
+            parentType: Object,
             name: String,
-            price: Number,
             description: String,
             createdBy: Number,
             updateBy: Number,
@@ -12,13 +14,13 @@ module.exports = (mongoose) => {
         { timestamps: true }
     );
 
-    schema.method("toJSON", function() {
+    schema.method("toJSON", function () {
         const { __v, _id, ...object } = this.toObject();
         object.id = _id;
         return object;
     });
 
-    const Part = mongoose.model("part", schema);
+    const PartType = mongoose.model("partType", schema);
 
-    return Part;
+    return PartType;
 };

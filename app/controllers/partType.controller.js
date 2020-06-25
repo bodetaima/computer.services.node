@@ -1,5 +1,5 @@
 const db = require("../models");
-const Part = db.parts;
+const PartType = db.partTypes;
 
 exports.create = (req, res) => {
     if (!req.body) {
@@ -7,17 +7,18 @@ exports.create = (req, res) => {
         return;
     }
 
-    const part = new Part({
-        name: req.body.name,
+    const partType = new PartType({
         type: req.body.type,
-        price: req.body.price,
+        isParentType: req.body.isParentType,
+        parentType: req.body.parentType,
+        name: req.body.name,
         description: req.body.description,
         createdBy: 0,
         updateBy: null,
         deleted: false,
     });
 
-    part.save(part)
+    partType.save(partType)
         .then((data) => {
             res.send(data);
         })
@@ -29,14 +30,7 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-    const name = req.query.name;
-    const type = req.query.type;
-    const nameCondition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
-    const typeCondition = type ? { "type.type": { $regex: new RegExp(type), $options: "i" } } : {};
-
-    Part.find({
-        $and: [nameCondition, typeCondition, { deleted: false }],
-    })
+    Part.find({ deleted: false })
         .then((data) => {
             res.send(data);
         })

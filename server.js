@@ -33,6 +33,7 @@ db.mongoose
     });
 
 require("./app/routes/part.routes")(app);
+require("./app/routes/partType.routes")(app);
 
 const PORT = process.env.PORT || 1025;
 app.listen(PORT, () => {

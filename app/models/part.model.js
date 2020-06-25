@@ -1,7 +1,7 @@
 module.exports = (mongoose) => {
     let schema = mongoose.Schema(
         {
-            type: Object,
+            type: {type: mongoose.Schema.Types.ObjectId, ref: 'PartType'},
             name: String,
             price: Number,
             description: String,
@@ -18,7 +18,7 @@ module.exports = (mongoose) => {
         return object;
     });
 
-    const Part = mongoose.model("part", schema);
+    const Part = mongoose.model("Part", schema);
 
     return Part;
 };

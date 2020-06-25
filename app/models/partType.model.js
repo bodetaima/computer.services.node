@@ -4,7 +4,7 @@ module.exports = (mongoose) => {
         {
             type: String,
             isParentType: Boolean,
-            parentType: Object,
+            parentType: {type: mongoose.Schema.Types.ObjectId, ref: 'PartType'},
             name: String,
             description: String,
             createdBy: Number,
@@ -20,7 +20,7 @@ module.exports = (mongoose) => {
         return object;
     });
 
-    const PartType = mongoose.model("partType", schema);
+    const PartType = mongoose.model("PartType", schema);
 
     return PartType;
 };

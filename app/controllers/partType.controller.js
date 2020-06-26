@@ -24,7 +24,7 @@ exports.create = (req, res) => {
         }
 
         if (req.body.parentType) {
-            PartType.find({ type: req.body.parentType }, (err, parentType) => {
+            PartType.find({ $and: [{ type: req.body.parentType }, { isParentType: false }] }, (err, parentType) => {
                 if (err) {
                     res.status(400).send({ message: err });
                     return;

@@ -18,7 +18,7 @@ app.get("/", (req, res) => {
     res.json({ message: "Hello, this is ExpressJS." });
 });
 
-const db = require("./app/models");
+const db = require("./models");
 db.mongoose
     .connect(db.url, {
         useNewUrlParser: true,
@@ -32,8 +32,8 @@ db.mongoose
         process.exit();
     });
 
-require("./app/routes/part.routes")(app);
-require("./app/routes/partType.routes")(app);
+require("./routes/part.routes")(app);
+require("./routes/partType.routes")(app);
 
 const PORT = process.env.PORT || 1025;
 app.listen(PORT, () => {

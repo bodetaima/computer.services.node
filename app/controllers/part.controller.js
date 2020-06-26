@@ -63,7 +63,7 @@ exports.findAll = (req, res) => {
             })));
         })
         .catch((err) => {
-            res.status(500).send({
+            res.status(400).send({
                 message: err.message || "Some error occurred while finding records",
             });
         });

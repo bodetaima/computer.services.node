@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "live": "nodemon server.js"
+    "live": "nodemon ./app/server.js",
+    "lint": "eslint ./app"
   },
   "author": "Phong Tran",
   "license": "ISC",
@@ -16,6 +17,7 @@
     "mongoose": "^5.9.20"
   },
   "devDependencies": {
+    "eslint": "^7.3.1",
     "nodemon": "^2.0.4"
   }
 }

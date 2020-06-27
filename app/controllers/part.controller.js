@@ -24,22 +24,25 @@ exports.create = (req, res) => {
         }
 
         if (req.body.type) {
-            PartType.find({ $and: [{ type: req.body.type }, { isParentType: false }] }, (err, partType) => {
-                if (err) {
-                    res.status(400).send({ message: err });
-                    return;
-                }
-
-                part.type = partType.map((type) => type._id);
-                part.save((err) => {
+            PartType.find(
+                { $and: [{ type: req.body.type }, { isParentType: false }, { deleted: false }] },
+                (err, partType) => {
                     if (err) {
                         res.status(400).send({ message: err });
                         return;
                     }
 
-                    res.send({ message: "Created successfully!", data: part });
-                });
-            });
+                    part.type = partType.map((type) => type._id);
+                    part.save((err) => {
+                        if (err) {
+                            res.status(400).send({ message: err });
+                            return;
+                        }
+
+                        res.send({ message: "Created successfully!", data: part });
+                    });
+                }
+            );
         }
     });
 };
@@ -47,26 +50,38 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     const name = req.query.name;
     const type = req.query.type;
-    const nameCondition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
-    const typeCondition = type ? { "type.type": { $regex: new RegExp(type), $options: "i" } } : {};
 
-    Part.find({
-        $and: [nameCondition, typeCondition, { deleted: false }],
-    }).populate("type", "_id type isParentType name description")
-        .then((data) => {
-            res.send(data.map((d) => ({
-                id: d._id,
-                name: d.name,
-                type: d.type,
-                price: d.price,
-                description: d.description
-            })));
+    PartType.find(type ? { type: { $in: type.split(",") } } : {}, (err, type) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+
+        let typeIdList = type.map((t) => t._id);
+
+        const nameCondition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
+
+        Part.find({
+            $and: [nameCondition, {type: {$in: typeIdList}}, { deleted: false }],
         })
-        .catch((err) => {
-            res.status(400).send({
-                message: err.message || "Some error occurred while finding records",
+            .populate("type", "_id type name description")
+            .then((data) => {
+                res.send(
+                    data.map((d) => ({
+                        id: d._id,
+                        name: d.name,
+                        type: d.type,
+                        price: d.price,
+                        description: d.description,
+                    }))
+                );
+            })
+            .catch((err) => {
+                res.status(400).send({
+                    message: err.message || "Some error occurred while finding records",
+                });
             });
-        });
+    });
 };
 
 exports.findOne = (req, res) => {};

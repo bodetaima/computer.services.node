@@ -24,22 +24,25 @@ exports.create = (req, res) => {
         }
 
         if (req.body.parentType) {
-            PartType.find({ $and: [{ type: req.body.parentType }, { isParentType: false }] }, (err, parentType) => {
-                if (err) {
-                    res.status(400).send({ message: err });
-                    return;
-                }
-
-                partType.parentType = parentType.map((par) => par._id);
-                partType.save((err) => {
+            PartType.find(
+                { $and: [{ type: req.body.parentType }, { isParentType: true }, { deleted: false }] },
+                (err, parentType) => {
                     if (err) {
                         res.status(400).send({ message: err });
                         return;
                     }
 
-                    res.send({ message: "Created successfully!", data: partType });
-                });
-            });
+                    partType.parentType = parentType.map((par) => par._id);
+                    partType.save((err) => {
+                        if (err) {
+                            res.status(400).send({ message: err });
+                            return;
+                        }
+
+                        res.send({ message: "Created successfully!", data: partType });
+                    });
+                }
+            );
         }
     });
 };
@@ -60,7 +63,13 @@ exports.findAll = (req, res) => {
                     isParentType: parentType[i].isParentType,
                     name: parentType[i].name,
                     description: parentType[i].description,
-                    childType: child.map(c => ({id: c._id, type: c.type, isParentType: c.isParentType, name: c.name, description: c.description})),
+                    childType: child.map((c) => ({
+                        id: c._id,
+                        type: c.type,
+                        isParentType: c.isParentType,
+                        name: c.name,
+                        description: c.description,
+                    })),
                 };
 
                 types.push(parent);

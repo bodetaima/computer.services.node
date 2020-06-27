@@ -1,10 +1,17 @@
-module.exports = app => {
+const { authJwt } = require("../middlewares");
+
+module.exports = (app) => {
     const partTypes = require("../controllers/partType.controller.js");
 
     let router = require("express").Router();
 
-    router.post("/", partTypes.create);
-    router.get("/", partTypes.findAll);
+    app.use(function (req, res, next) {
+        res.header("Access-Control-Allow-Headers", "x-access-token, Origin, Content-Type, Accept");
+        next();
+    });
 
-    app.use('/api/types', router);
-}
+    router.post("/", [authJwt.verifyToken, authJwt.isUser], partTypes.create);
+    router.get("/", [authJwt.verifyToken, authJwt.isUser], partTypes.findAll);
+
+    app.use("/api/types", router);
+};

@@ -48,16 +48,25 @@ exports.findAll = (req, res) => {
     PartType.find({ deleted: false })
         .populate("parentType", "_id type isParentType name description")
         .then((data) => {
-            res.send(
-                data.map((d) => ({
-                    id: d._id,
-                    type: d.type,
-                    isParentType: d.isParentType,
-                    name: d.name,
-                    description: d.description,
-                    parentType: d.parentType,
-                }))
-            );
+            let parentType = data.filter((d) => d.isParentType === true);
+            let childType = data.filter((d) => d.isParentType === false);
+            let types = [];
+
+            for (let i = 0; i < parentType.length; i++) {
+                let child = childType.filter((c) => c.parentType.type === parentType[i].type);
+                let parent = {
+                    id: parentType[i]._id,
+                    type: parentType[i].type,
+                    isParentType: parentType[i].isParentType,
+                    name: parentType[i].name,
+                    description: parentType[i].description,
+                    childType: child.map(c => ({id: c._id, type: c.type, isParentType: c.isParentType, name: c.name, description: c.description})),
+                };
+
+                types.push(parent);
+            }
+
+            res.send(types);
         })
         .catch((err) => {
             res.status(400).send({

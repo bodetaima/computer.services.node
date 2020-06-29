@@ -84,6 +84,21 @@ exports.findAll = (req, res) => {
         });
 };
 
-exports.findOne = (req, res) => {};
-
-exports.update = (req, res) => {};
+exports.findChildType = (req, res) => {
+    PartType.find({ $and: [{ isParentType: false }, { deleted: false }] })
+        .then((data) => {
+            let types = data.map((d) => ({
+                id: d._id,
+                type: d.type,
+                isParentType: d.isParentType,
+                name: d.name,
+                description: d.description,
+            }));
+            res.send(types);
+        })
+        .catch((err) => {
+            res.status(400).send({
+                message: err.message || "Some error occurred while finding records",
+            });
+        });
+};

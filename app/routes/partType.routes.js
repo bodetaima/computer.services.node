@@ -12,6 +12,7 @@ module.exports = (app) => {
 
     router.post("/", [authJwt.verifyToken, authJwt.isUser], partTypes.create);
     router.get("/", [authJwt.verifyToken, authJwt.isUser], partTypes.findAll);
+    router.get("/child", [authJwt.verifyToken, authJwt.isUser], partTypes.findChildType);
 
     app.use("/api/types", router);
 };

@@ -88,22 +88,26 @@ exports.findAll = (req, res) => {
             .populate("type", "_id type name description")
             .sort(sortCondition)
             .then((data) => {
-                let parts = data.map((d) => ({
-                    id: d._id,
-                    name: d.name,
-                    type: d.type,
-                    price: d.price,
-                    description: d.description,
-                }));
+                if (!data) {
+                    res.status(400).send({ message: "Not found any part." });
+                } else {
+                    let parts = data.map((d) => ({
+                        id: d._id,
+                        name: d.name,
+                        type: d.type,
+                        price: d.price,
+                        description: d.description,
+                    }));
 
-                let response = {
-                    parts: parts,
-                    size: Number(size),
-                    page: Number(page),
-                    totalPages: Math.ceil(Number(numOfDocuments) / Number(size)),
-                };
+                    let response = {
+                        parts: parts,
+                        size: Number(size),
+                        page: Number(page),
+                        totalPages: Math.ceil(Number(numOfDocuments) / Number(size)),
+                    };
 
-                res.send(response);
+                    res.send(response);
+                }
             })
             .catch((err) => {
                 res.status(400).send({
@@ -113,6 +117,27 @@ exports.findAll = (req, res) => {
     });
 };
 
-exports.findOne = (req, res) => {};
+exports.findOne = (req, res) => {
+    const id = req.params.id;
+
+    Part.findById(id)
+        .populate("type", "_id type name description")
+        .then((data) => {
+            if (!data) {
+                res.status(400).send({ message: "Not found any Part with id " + id });
+            } else {
+                res.send({
+                    id: data._id,
+                    name: data.name,
+                    type: data.type,
+                    price: data.price,
+                    description: data.description,
+                });
+            }
+        })
+        .catch((err) => {
+            res.status(500).send({ message: err });
+        });
+};
 
 exports.update = (req, res) => {};

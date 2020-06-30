@@ -50,8 +50,10 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     const name = req.query.name;
     const type = req.query.type;
+    const size = Number(req.query.size) || 8;
+    const page = Number(req.query.page) || 1;
 
-    PartType.find(type ? { type: { $in: type.split(",") } } : {}, (err, type) => {
+    PartType.find(type ? { type: { $in: type.split(",") } } : {}, async (err, type) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
@@ -61,20 +63,34 @@ exports.findAll = (req, res) => {
 
         const nameCondition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
 
+        const numOfDocuments = await Part.countDocuments({
+            $and: [nameCondition, { type: { $in: typeIdList } }, { deleted: false }],
+        });
+
         Part.find({
-            $and: [nameCondition, {type: {$in: typeIdList}}, { deleted: false }],
+            $and: [nameCondition, { type: { $in: typeIdList } }, { deleted: false }],
         })
+            .skip(size * page - size)
+            .limit(size)
             .populate("type", "_id type name description")
+            .sort({ createdAt: -1 })
             .then((data) => {
-                res.send(
-                    data.map((d) => ({
-                        id: d._id,
-                        name: d.name,
-                        type: d.type,
-                        price: d.price,
-                        description: d.description,
-                    }))
-                );
+                let parts = data.map((d) => ({
+                    id: d._id,
+                    name: d.name,
+                    type: d.type,
+                    price: d.price,
+                    description: d.description,
+                }));
+
+                let response = {
+                    parts: parts,
+                    size: Number(size),
+                    page: Number(page),
+                    totalPages: Math.ceil(Number(numOfDocuments) / Number(size)),
+                };
+
+                res.send(response);
             })
             .catch((err) => {
                 res.status(400).send({

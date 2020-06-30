@@ -5,7 +5,7 @@ const cors = require("cors");
 const app = express();
 
 let corsOptions = {
-    origin: "http://localhost:1026",
+    origin: "http://192.168.1.20:1026",
 };
 
 app.use(cors(corsOptions));
@@ -38,8 +38,8 @@ function initial() {
     Role.estimatedDocumentCount((err, count) => {
         if (!err && count == 0) {
             new Role({
-                name: "user"
-            }).save(err => {
+                name: "user",
+            }).save((err) => {
                 if (err) {
                     console.log("error", err);
                 }
@@ -47,8 +47,8 @@ function initial() {
             });
 
             new Role({
-                name: "customer"
-            }).save(err => {
+                name: "customer",
+            }).save((err) => {
                 if (err) {
                     console.log("error", err);
                 }
@@ -57,14 +57,14 @@ function initial() {
 
             new Role({
                 name: "admin",
-            }).save(err => {
-                if(err) {
+            }).save((err) => {
+                if (err) {
                     console.log("error", err);
                 }
                 console.log("Added 'admin' to roles collection");
-            })
+            });
         }
-    })
+    });
 }
 require("./routes/auth.routes")(app);
 require("./routes/part.routes")(app);

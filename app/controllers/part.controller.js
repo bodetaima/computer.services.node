@@ -50,8 +50,21 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     const name = req.query.name;
     const type = req.query.type;
-    const size = Number(req.query.size) || 8;
+    const size = Number(req.query.size) || 5;
     const page = Number(req.query.page) || 1;
+    const sort = req.query.sort;
+
+    let sortCondition = {};
+
+    if (sort === "priceAsc") {
+        sortCondition = { price: 1 };
+    } else if (sort === "priceDesc") {
+        sortCondition = { price: -1 };
+    } else if (sort === "createdAsc") {
+        sortCondition = { createdAt: 1 };
+    } else {
+        sortCondition = { createdAt: -1 };
+    }
 
     PartType.find(type ? { type: { $in: type.split(",") } } : {}, async (err, type) => {
         if (err) {
@@ -73,7 +86,7 @@ exports.findAll = (req, res) => {
             .skip(size * page - size)
             .limit(size)
             .populate("type", "_id type name description")
-            .sort({ createdAt: -1 })
+            .sort(sortCondition)
             .then((data) => {
                 let parts = data.map((d) => ({
                     id: d._id,

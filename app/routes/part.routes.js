@@ -13,5 +13,6 @@ module.exports = (app) => {
     router.post("/", [authJwt.verifyToken, authJwt.isUser], parts.create);
     router.get("/", [authJwt.verifyToken, authJwt.isUser], parts.findAll);
     router.get("/:id", [authJwt.verifyToken, authJwt.isUser], parts.findOne);
+    router.put("/:id", [authJwt.verifyToken, authJwt.isUser], parts.update);
     app.use("/api/parts", router);
 };

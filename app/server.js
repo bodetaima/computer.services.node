@@ -14,10 +14,6 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-    res.json({ message: "Hello, this is ExpressJS." });
-});
-
 const db = require("./models");
 const Role = db.role;
 db.mongoose
@@ -66,6 +62,8 @@ function initial() {
         }
     });
 }
+
+require("./routes/index.routes")(app);
 require("./routes/auth.routes")(app);
 require("./routes/part.routes")(app);
 require("./routes/partType.routes")(app);

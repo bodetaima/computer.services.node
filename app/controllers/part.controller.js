@@ -49,7 +49,7 @@ exports.create = (req, res) => {
 
 exports.findAll = (req, res) => {
     const name = req.query.name;
-    const type = req.query.type;
+    const types = req.query.types;
     const size = Number(req.query.size) || 5;
     const page = Number(req.query.page) || 1;
     const sort = req.query.sort;
@@ -66,13 +66,13 @@ exports.findAll = (req, res) => {
         sortCondition = { createdAt: -1 };
     }
 
-    PartType.find(type ? { type: { $in: type.split(",") } } : {}, async (err, type) => {
+    PartType.find(types ? { type: { $in: types.split(",") } } : {}, async (err, types) => {
         if (err) {
             res.status(500).send({ message: err });
             return;
         }
 
-        let typeIdList = type.map((t) => t._id);
+        let typeIdList = types.map((t) => t._id);
 
         const nameCondition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
 

@@ -1,6 +1,4 @@
 const express = require("express");
-const path = require('path');
-const serveStatic = require('serve-static');
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
@@ -19,7 +17,7 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(serveStatic(__dirname + "/dist"));
+app.use(express.static("dist"));
 
 const db = require("./models");
 const Role = db.role;

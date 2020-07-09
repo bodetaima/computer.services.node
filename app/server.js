@@ -4,8 +4,11 @@ const cors = require("cors");
 
 const app = express();
 
+const origin = "https://computer-service-cms.herokuapp.com/";
+// const origin = "http://localhost:1026"
+
 let corsOptions = {
-    origin: "http://localhost:1026",
+    origin: origin,
 };
 
 app.use(cors(corsOptions));

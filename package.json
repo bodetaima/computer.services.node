@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "live": "nodemon ./app/server.js",
+    "start": "node ./app/server.js",
     "lint": "eslint ./app"
   },
   "author": "Phong Tran",

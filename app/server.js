@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(serveStatic(__dirname + "/public"));
+app.use(serveStatic(__dirname + "/dist"));
 
 const db = require("./models");
 const Role = db.role;

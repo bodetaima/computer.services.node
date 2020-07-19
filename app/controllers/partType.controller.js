@@ -32,8 +32,8 @@ exports.create = (req, res) => {
                         return;
                     }
 
-                    partType.parentType = parentType.map((par) => par._id);
-                    partType.save((err) => {
+                    partType.parentType = parentType.map(par => par._id);
+                    partType.save(err => {
                         if (err) {
                             res.status(400).send({ message: err });
                             return;
@@ -50,20 +50,20 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     PartType.find({ deleted: false })
         .populate("parentType", "_id type isParentType name description")
-        .then((data) => {
-            let parentType = data.filter((d) => d.isParentType === true);
-            let childType = data.filter((d) => d.isParentType === false);
+        .then(data => {
+            let parentType = data.filter(d => d.isParentType === true);
+            let childType = data.filter(d => d.isParentType === false);
             let types = [];
 
             for (let i = 0; i < parentType.length; i++) {
-                let child = childType.filter((c) => c.parentType.type === parentType[i].type);
+                let child = childType.filter(c => c.parentType.type === parentType[i].type);
                 let parent = {
                     id: parentType[i]._id,
                     type: parentType[i].type,
                     isParentType: parentType[i].isParentType,
                     name: parentType[i].name,
                     description: parentType[i].description,
-                    childType: child.map((c) => ({
+                    childType: child.map(c => ({
                         id: c._id,
                         type: c.type,
                         isParentType: c.isParentType,
@@ -77,7 +77,44 @@ exports.findAll = (req, res) => {
 
             res.send(types);
         })
-        .catch((err) => {
+        .catch(err => {
+            res.status(400).send({
+                message: err.message || "Some error occurred while finding records",
+            });
+        });
+};
+
+exports.findAllForFrontEnd = (req, res) => {
+    PartType.find({ deleted: false })
+        .populate("parentType", "_id type isParentType name description")
+        .then(data => {
+            let parentType = data.filter(d => d.isParentType === true);
+            let childType = data.filter(d => d.isParentType === false);
+            let types = [];
+
+            for (let i = 0; i < parentType.length; i++) {
+                let child = childType.filter(c => c.parentType.type === parentType[i].type);
+                let parent = {
+                    id: parentType[i]._id,
+                    type: parentType[i].type,
+                    isParentType: parentType[i].isParentType,
+                    name: parentType[i].name,
+                    description: parentType[i].description,
+                    childType: child.map(c => ({
+                        id: c._id,
+                        type: c.type,
+                        isParentType: c.isParentType,
+                        name: c.name,
+                        description: c.description,
+                    })),
+                };
+
+                types.push(parent);
+            }
+
+            res.send(types);
+        })
+        .catch(err => {
             res.status(400).send({
                 message: err.message || "Some error occurred while finding records",
             });
@@ -86,8 +123,8 @@ exports.findAll = (req, res) => {
 
 exports.findChildType = (req, res) => {
     PartType.find({ $and: [{ isParentType: false }, { deleted: false }] })
-        .then((data) => {
-            let types = data.map((d) => ({
+        .then(data => {
+            let types = data.map(d => ({
                 id: d._id,
                 type: d.type,
                 isParentType: d.isParentType,
@@ -96,7 +133,7 @@ exports.findChildType = (req, res) => {
             }));
             res.send(types);
         })
-        .catch((err) => {
+        .catch(err => {
             res.status(400).send({
                 message: err.message || "Some error occurred while finding records",
             });

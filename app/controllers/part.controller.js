@@ -32,8 +32,8 @@ exports.create = (req, res) => {
                         return;
                     }
 
-                    part.type = partType.map((type) => type._id);
-                    part.save((err) => {
+                    part.type = partType.map(type => type._id);
+                    part.save(err => {
                         if (err) {
                             res.status(400).send({ message: err });
                             return;
@@ -72,7 +72,7 @@ exports.findAll = (req, res) => {
             return;
         }
 
-        let typeIdList = types.map((t) => t._id);
+        let typeIdList = types.map(t => t._id);
 
         const nameCondition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
 
@@ -87,11 +87,11 @@ exports.findAll = (req, res) => {
             .limit(size)
             .populate("type", "_id type name description")
             .sort(sortCondition)
-            .then((data) => {
+            .then(data => {
                 if (!data) {
                     res.status(400).send({ message: "Not found any part." });
                 } else {
-                    let parts = data.map((d) => ({
+                    let parts = data.map(d => ({
                         id: d._id,
                         name: d.name,
                         type: d.type,
@@ -109,7 +109,77 @@ exports.findAll = (req, res) => {
                     res.send(response);
                 }
             })
-            .catch((err) => {
+            .catch(err => {
+                res.status(400).send({
+                    message: err.message || "Some error occurred while finding records",
+                });
+            });
+    });
+};
+
+exports.findAllForFrontEnd = (req, res) => {
+    const name = req.query.name;
+    const types = req.query.types;
+    const size = Number(req.query.size) || 5;
+    const page = Number(req.query.page) || 1;
+    const sort = req.query.sort;
+
+    let sortCondition = {};
+
+    if (sort === "priceAsc") {
+        sortCondition = { price: 1 };
+    } else if (sort === "priceDesc") {
+        sortCondition = { price: -1 };
+    } else if (sort === "createdAsc") {
+        sortCondition = { createdAt: 1 };
+    } else {
+        sortCondition = { createdAt: -1 };
+    }
+
+    PartType.find(types ? { type: { $in: types.split(",") } } : {}, async (err, types) => {
+        if (err) {
+            res.status(500).send({ message: err });
+            return;
+        }
+
+        let typeIdList = types.map(t => t._id);
+
+        const nameCondition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
+
+        const numOfDocuments = await Part.countDocuments({
+            $and: [nameCondition, { type: { $in: typeIdList } }, { deleted: false }],
+        });
+
+        Part.find({
+            $and: [nameCondition, { type: { $in: typeIdList } }, { deleted: false }],
+        })
+            .skip(size * page - size)
+            .limit(size)
+            .populate("type", "_id type name description")
+            .sort(sortCondition)
+            .then(data => {
+                if (!data) {
+                    res.status(400).send({ message: "Not found any part." });
+                } else {
+                    let parts = data.map(d => ({
+                        id: d._id,
+                        name: d.name,
+                        type: d.type,
+                        price: d.price,
+                        description: d.description,
+                    }));
+
+                    let response = {
+                        parts: parts,
+                        size: Number(size),
+                        page: Number(page),
+                        totalPages: Math.ceil(Number(numOfDocuments) / Number(size)),
+                    };
+
+                    res.send(response);
+                }
+            })
+            .catch(err => {
                 res.status(400).send({
                     message: err.message || "Some error occurred while finding records",
                 });
@@ -122,7 +192,7 @@ exports.findOne = (req, res) => {
 
     Part.findById(id)
         .populate("type", "_id type name description")
-        .then((data) => {
+        .then(data => {
             if (!data) {
                 res.status(400).send({ message: "Not found any Part with id " + id });
             } else {
@@ -135,7 +205,7 @@ exports.findOne = (req, res) => {
                 });
             }
         })
-        .catch((err) => {
+        .catch(err => {
             res.status(500).send({ message: err });
         });
 };
@@ -150,7 +220,7 @@ exports.update = (req, res) => {
     const id = req.params.id;
 
     Part.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-        .then((data) => {
+        .then(data => {
             console.log(data);
             if (!data) {
                 res.status(404).send({
@@ -160,7 +230,7 @@ exports.update = (req, res) => {
                 res.send({ message: "Tutorial was updated successfully." });
             }
         })
-        .catch((err) => {
+        .catch(err => {
             res.status(500).send(
                 {
                     message: "Error updating Part with id=" + id,

@@ -1,6 +1,6 @@
 const { authJwt } = require("../middlewares");
 
-module.exports = (app) => {
+module.exports = app => {
     const parts = require("../controllers/part.controller.js");
 
     let router = require("express").Router();
@@ -12,6 +12,7 @@ module.exports = (app) => {
 
     router.post("/", [authJwt.verifyToken, authJwt.isUser], parts.create);
     router.get("/", [authJwt.verifyToken, authJwt.isUser], parts.findAll);
+    router.get("/frontend", parts.findAllForFrontEnd);
     router.get("/:id", [authJwt.verifyToken, authJwt.isUser], parts.findOne);
     router.put("/:id", [authJwt.verifyToken, authJwt.isUser], parts.update);
     app.use("/api/parts", router);

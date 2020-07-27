@@ -2,6 +2,8 @@
 
 Clone this repo, as usual.
 
+Checkout /dumb folder for bootstrap data.
+
 Good old install for a little bit of depressing.
 
 `npm install`

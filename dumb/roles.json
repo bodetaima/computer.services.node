@@ -1,0 +1,3 @@
+{"_id":{"$oid":"5f17e40f0326e8713f2769c2"},"name":"user","createdAt":{"$date":"2020-07-22T07:00:31.999Z"},"updatedAt":{"$date":"2020-07-22T07:00:31.999Z"},"__v":0}
+{"_id":{"$oid":"5f17e40f0326e8713f2769c3"},"name":"customer","createdAt":{"$date":"2020-07-22T07:00:31.999Z"},"updatedAt":{"$date":"2020-07-22T07:00:31.999Z"},"__v":0}
+{"_id":{"$oid":"5f17e40f0326e8713f2769c4"},"name":"admin","createdAt":{"$date":"2020-07-22T07:00:31.999Z"},"updatedAt":{"$date":"2020-07-22T07:00:31.999Z"},"__v":0}

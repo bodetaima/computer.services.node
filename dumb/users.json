@@ -1,0 +1,1 @@
+{"_id":{"$oid":"5f17e5ac0326e8713f2769c5"},"roles":[{"$oid":"5f17e40f0326e8713f2769c2"}],"username":"tranphongbb","email":"tranphongbb@outlook.com","password":"$2a$08$V.KuQ0juy3XuTmhoOAclgOYH6FC5Rz4gdgjJDdMVh/iF8PWdlwHse","createdAt":{"$date":"2020-07-22T07:07:24.398Z"},"updatedAt":{"$date":"2020-07-22T07:07:24.417Z"},"__v":1}
